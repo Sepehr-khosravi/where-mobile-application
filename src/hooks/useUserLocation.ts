@@ -8,13 +8,6 @@ interface LocationData {
   updatedAt: string;
 }
 
-// Default fallback location (New York, you can change)
-const FALLBACK_LOCATION: LocationData = {
-  latitude: 40.7128,
-  longitude: -74.0060,
-  updatedAt: new Date().toISOString(),
-};
-
 export function useUserLocation(userId: string | undefined) {
   const [location, setLocation] = useState<LocationData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,25 +28,23 @@ export function useUserLocation(userId: string | undefined) {
     let cancelled = false;
     let cleanupFn: (() => void) | undefined;
 
-    // 🔥 Fallback: after 5 seconds, if no location received, set default
+    // تایم‌اوت ۱۰ ثانیه‌ای – اگر لوکیشن نیومد، خطا بده (نه فالی‌بک)
     const timeout = setTimeout(() => {
       if (!cancelled && loading) {
         setLoading(false);
-        setLocation(FALLBACK_LOCATION);
-        console.log('⏰ Location timeout – using fallback (NYC)');
+        setError(new Error('Location timeout – friend might be offline'));
+        console.log('⏰ Location timeout – no location received');
       }
-    }, 5000);
+    }, 10000);
 
     const start = async () => {
       try {
         await connectSocket();
         const socket = await getSocket();
 
-        // Emit watch event
         socket.emit('friend:watch', { friendId });
         console.log(`🔭 Watching friend ${friendId}`);
 
-        // Handler for location updates
         const handler = (payload: any) => {
           if (payload.userId === friendId) {
             setLocation({
@@ -64,14 +55,12 @@ export function useUserLocation(userId: string | undefined) {
             setLoading(false);
             setError(null);
             console.log(`📍 Received location for ${friendId}:`, payload.latitude, payload.longitude);
-            // Clear the timeout since we got a real location
             clearTimeout(timeout);
           }
         };
 
         socket.on('friend:location', handler);
 
-        // Cleanup function
         cleanupFn = () => {
           if (!cancelled) {
             socket.off('friend:location', handler);

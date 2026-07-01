@@ -28,7 +28,8 @@ import { useTheme } from '../../theme/ThemeContext';
 
 
 // ---------- Leaflet map HTML ----------
-const getMapHtml = (lat: number, lng: number, username: string) => `
+const getMapHtml = (lat: number, lng: number, username: string, isLocationReady : boolean) => {
+  return isLocationReady ? `
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,7 +55,31 @@ const getMapHtml = (lat: number, lng: number, username: string) => `
   </script>
 </body>
 </html>
-`;
+` :  `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <style>
+    body, html, #map { height: 100%; margin: 0; padding: 0; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <script>
+    var map = L.map('map').setView([${lat}, ${lng}], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap France'
+    }).addTo(map);
+    // L.marker([${lat}, ${lng}])
+    //   .addTo(map)
+    //   .bindPopup('${username}');
+  </script>
+</body>
+</html>`};
 
 // ---------- Main Component ----------
 export default function UserProfileScreen() {
@@ -86,6 +111,7 @@ export default function UserProfileScreen() {
         return;
       }
       const loc = await Location.getCurrentPositionAsync({});
+      
       setDisplayLocation({
         latitude: loc.coords.latitude,
         longitude: loc.coords.longitude,
@@ -169,7 +195,7 @@ export default function UserProfileScreen() {
           <WebView
             key={mapKey}
             originWhitelist={['*']}
-            source={{ html: getMapHtml(displayLocation.latitude, displayLocation.longitude, profile?.username || 'User') }}
+            source={{ html: getMapHtml(displayLocation.latitude, displayLocation.longitude, profile?.username || 'User', location ? true : false) }}
             style={StyleSheet.absoluteFill}
             javaScriptEnabled
             domStorageEnabled
@@ -199,7 +225,7 @@ export default function UserProfileScreen() {
           >
             {/* Profile row */}
             <View style={styles.cardRow}>
-              <Ionicons name="arrow-back" size={20} color={colors.primaryText} onPress={()=>{
+              <Ionicons name="arrow-back" size={20} color={colors.text} onPress={()=>{
                 router.back();
               }} />
               <Avatar username={profile?.username || 'User'} avatarColor={colors.primary} size={44} />

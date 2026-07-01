@@ -1,4 +1,5 @@
 // app/_layout.tsx
+import { Constants } from '@/constants/constants';
 import { useBackgroundLocation } from '@/hooks/useBackgroundLocation';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import {
@@ -13,7 +14,8 @@ import { LocationSharingProvider, useLocationSharing } from '../contexts/Locatio
 import { ThemeProvider, useTheme } from '../theme/ThemeContext';
 
 function RootLayoutContent() {
-  const { colors, scheme } = useTheme();
+  const { colors, scheme } = useTheme();const 
+  isExpoGo = Constants.appOwnership === 'expo';
   const { isLoading, hasSeenOnboarding, isAuthenticated } = useAuth();
   const { isEnabled: locationSharingEnabled } = useLocationSharing();
   const router = useRouter();
@@ -21,7 +23,7 @@ function RootLayoutContent() {
 
   // 🔥 Start background tracking only if user is authenticated AND location sharing is enabled
   const { isTracking, permissionGranted } = useBackgroundLocation(
-    !!(isAuthenticated && locationSharingEnabled)
+    !!(isAuthenticated && locationSharingEnabled) && !isExpoGo
   );
 
   useEffect(() => {

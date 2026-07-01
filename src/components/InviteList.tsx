@@ -1,4 +1,4 @@
-import { Invite, InviteStatus, InviteStyle, PageType } from "@/app/invites";
+import { Invite, InviteStatus, styles as InviteStyle, PageType } from "@/app/invites";
 import { useTheme } from "@/theme/ThemeContext";
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from "react";

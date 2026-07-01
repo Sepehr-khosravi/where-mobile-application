@@ -1,8 +1,11 @@
 //components/inviteItem.tsx
-import { Invite, InviteStyle, PageType } from "@/app/invites";
+import type { Invite, PageType } from "@/app/invites";
+import { styles as InviteStyle } from "@/app/invites";
 import { useTheme } from "@/theme/ThemeContext";
 import { Ionicons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from "react-native";
+
+
 // =============== Invite Item Component ===============
 export interface InviteItemProps {
   invite: Invite;
