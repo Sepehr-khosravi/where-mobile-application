@@ -19,9 +19,9 @@
 
 export const ENV = {
   // TODO: replace with your real API base URL + port
-  API_BASE_URL: 'http://192.168.1.8:8080',
+  API_BASE_URL: 'http://192.168.1.10:8080',
 
   // TODO: replace with your real Socket.IO server URL — often the
   // same host as the API; confirm if it's a different port for sockets
-  SOCKET_URL: 'http://192.168.1.8:8080',
+  SOCKET_URL: 'http://192.168.1.10:8080',
 } as const;
